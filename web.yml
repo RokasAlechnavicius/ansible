@@ -9,7 +9,7 @@
     mysql_db: webas	
     mysql_user: topkekas
     mysql_password: topkekaspass
-    mysql_host: "{{lookup('file', '/etc/ansible/db.txt') }}"
+    mysql_host: "{{lookup('file', '/etc/ansible/mysql.txt') }}"
 
   tasks:
 

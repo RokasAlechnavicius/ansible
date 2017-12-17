@@ -6,17 +6,7 @@
 
   vars:
     http_port: 80
-    mysql_db: webas	
-    mysql_user: topkekas
-    mysql_password: topkekaspass---
-- hosts: web
-  sudo: yes
-  sudo_user: root
-  remote_user: root
-
-  vars:
-    http_port: 80
-    mysql_db: webas	
+    mysql_db: webas
     mysql_user: topkekas
     mysql_password: topkekaspass
     mysql_host: "{{lookup('file', '/etc/ansible/mysql.txt') }}"
@@ -34,9 +24,9 @@
         - python-mysqldb
         - mysql-client
         - git
- 
+
   - name: delete apache index
-    command: rm /var/www/html/index.html 
+    command: rm /var/www/html/index.html
 
   - git:
       repo: 'https://github.com/RokasAlechnavicius/virtualwebaskopija.git'
@@ -45,36 +35,6 @@
 
   - name: Update PHP config file
     command: sudo sed -i 's/10.0.0.222/{{ mysql_host }}/g' /var/www/html/config.php
-    notify:
-    - restart apache
-
-  handlers:
-  - name: restart apache
-    service: name=apache2 state=restarted
-
-    mysql_host: "{{lookup('file', '/etc/ansible/mysql.txt') }}"
-
-  tasks:
-
-  - name: install required software
-    apt: name={{ item }} update_cache=yes state=latest
-    with_items:
-        - apache2
-        - php7.0-mysql
-        - php7.0
-        - libapache2-mod-php
-        - php7.0-mcrypt
-        - python-mysqldb
-        - mysql-client
-        - git
- 
- 
-  - git:
-      repo: 'https://github.com/RokasAlechnavicius/virtualwebaskopija.git'
-      dest: /var/www/html
-
-  - name: Update PHP config file
-    command: sudo sed -i 's/10.0.1.222/{{ mysql_host }}/g' var/www/html
     notify:
     - restart apache
 

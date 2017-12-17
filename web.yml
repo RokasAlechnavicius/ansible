@@ -1,0 +1,68 @@
+---
+- hosts: web
+  sudo: yes
+  sudo_user: root
+  remote_user: root
+
+  vars:
+    http_port: 80
+    mysql_db: webas	
+    mysql_user: topkekas
+    mysql_password: topkekaspass
+    mysql_host: "{{lookup('file', '/etc/ansible/db.txt') }}"
+
+  tasks:
+
+  - name: install required software
+    apt: name={{ item }} update_cache=yes state=latest
+    with_items:
+        - apache2
+        - php7.0-mysql
+        - php7.0
+        - libapache2-mod-php
+        - php7.0-mcrypt
+        - python-mysqldb
+        - mysql-client
+        - git
+ 
+  - name: install yum
+    apt: name=yum update_cache=yes state=latest
+ 
+  - name: Install the httpd rpm
+    apt: name=httpd update_cache=yes state=latest
+
+  - name: start the httpd service
+    service: name=httpd state=started
+ 
+  - name: Open port 80
+    firewalld: service=http permanent=true state=enabled
+  
+  - name: start the firewalld service
+    service: name=firewalld state=restarted
+    notify:
+    - restart apache
+
+  - name: remove default index file
+    file:
+      path=/var/www/html/index.html state=absent
+  
+  - git:
+      repo: 'https://github.com/RokasAlechnavicius/virtualwebaskopija.git'
+      dest: /var/www/html
+
+  - name: Update PHP config file
+    lineinfile:
+      dest=/var/www/html/www.telenordi.lt/config.php
+      regexp="{{ item.regexp }}"
+      line="{{ item.line }}"
+    with_items:
+    - {'regexp': "define\\('DB_NAME', '(.)+'\\);", 'line': "define('DB_NAME', '{{mysql_db}}');"}
+    - {'regexp': "define\\('DB_USER', '(.)+'\\);", 'line': "define('DB_USER', '{{mysql_user}}');"}
+    - {'regexp': "define\\('DB_PASSWORD', '(.)+'\\);", 'line': "define('DB_PASSWORD', '{{mysql_password}}');"}
+    - {'regexp': "define\\('DB_HOST', '(.)+'\\);", 'line': "define('DB_HOST', '{{mysql_host}}');"}
+    notify:
+    - restart apache
+
+  handlers:
+  - name: restart apache
+    service: name=apache2 state=rest

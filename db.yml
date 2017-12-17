@@ -1,0 +1,58 @@
+---
+
+- hosts: db
+
+  vars:
+    mysql_db: webas
+    mysql_user: topkekas
+    mysql_password: topkekaspass
+    web_host: "{{lookup('file', '/etc/ansible/web.txt') }}"
+    mysql_bind: "{{lookup('file', '/etc/ansible/mysql.txt') }}"
+
+  tasks:
+
+  - name: Install required software
+    apt:
+      name={{ item }} update_cache=yes state=latest
+    with_items:
+      - mysql-server
+      - python-mysqldb
+
+  - name: add IP to config
+    command: sudo sed -i 's/127.0.0.1/{{ mysql_bind }}/g' /etc/mysql/mysql.conf.d/mysqld.cnf
+
+  - ufw:
+     state: enabled
+     policy: allow
+
+  - name: restart mysql
+    service:
+           name: mysql
+           state: restarted
+    
+
+  - name: rsa setup
+    command: mysql_ssl_rsa_setup --uid=mysql
+    
+  - name: eiknaxui
+    command: ufw allow mysql
+
+  - name: create mySQL database
+    mysql_db:
+      name={{ mysql_db }}
+      state=present
+
+  - name: create database user
+    mysql_user:
+      name={{ mysql_user }}
+      password={{ mysql_password }}
+      priv='*.*:ALL,GRANT'
+      host={{ web_host }}
+  
+  - copy: src=/root/table.sql dest=/tmp
+  - mysql_db: name=webas state=import target=/tmp/table.sql
+
+  - name: restart mysql
+    service:
+           name: mysql 
+           state: restarted

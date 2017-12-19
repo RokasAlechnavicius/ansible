@@ -25,7 +25,7 @@
     service: name=ufw state=restarted
 
   - name: install apt-transport-https
-    apt: name=apt-transport-https update_cache=yes state=latesr
+    apt: name=apt-transport-https update_cache=yes state=latest
 
   - name: downloading the GPG key
     command: curl https://repo.skype.com/data/SKYPE-GPG-KEY | sudo apt-key add -

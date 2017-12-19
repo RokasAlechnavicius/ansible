@@ -1,7 +1,7 @@
 ---
 
 - hosts: db
-    become: yes
+  become: yes
 
   vars:
     mysql_db: webas

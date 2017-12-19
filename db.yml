@@ -1,6 +1,7 @@
 ---
 
 - hosts: db
+    become: yes
 
   vars:
     mysql_db: webas
@@ -21,16 +22,14 @@
   - name: add IP to config
     command: sudo sed -i 's/127.0.0.1/{{ mysql_bind }}/g' /etc/mysql/mysql.conf.d/mysqld.cnf
 
+  - name: rsa setup
+    command: mysql_ssl_rsa_setup --uid=mysql
 
   - name: restart mysql
     service:
            name: mysql
            state: restarted
-    
-
-  - name: rsa setup
-    command: mysql_ssl_rsa_setup --uid=mysql
-    
+   
   - name: allow firewall mysql
     command: ufw allow mysql
 

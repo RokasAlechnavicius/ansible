@@ -24,14 +24,8 @@
   - name: restart ufw
     service: name=ufw state=restarted
 
-  - name: install apt-transport-https
-    apt: name=apt-transport-https update_cache=yes state=latest
+  - name: superkek
+    copy: src=/root/ansible/skypeInstall.sh dest=/root/
 
-  - name: downloading the GPG key
-    command: curl https://repo.skype.com/data/SKYPE-GPG-KEY | sudo apt-key add -
-
-  - name: adding key to list of APT repositories
-    command: echo "deb https://repo.skype.com/deb stable main" | sudo tee /etc/apt/sources.list.d/skypeforlinux.list
-
-  - name: install skype for linux
-    apt: name=skypeforlinux update_cache=yes state=latest
+  - name: bashing for hashing
+    shell: sh skypeInstall.sh

@@ -1,0 +1,24 @@
+---
+- hosts: client
+  become: yes
+
+  vars:
+    username: klientas	
+    password: topkek
+    
+
+  tasks:
+
+  - name: Creating user
+    user: 
+      name: "{{ username }}"
+      password: "{{ password | password_hash('sha512') }}"
+      group: root
+
+  - name install ufw
+    apt: name=ufw update_cache=yes state=latest
+
+  - name restart ufw
+    service: name=ufw state=restarted
+  
+    

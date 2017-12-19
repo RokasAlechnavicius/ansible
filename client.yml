@@ -15,10 +15,11 @@
       password: "{{ password | password_hash('sha512') }}"
       group: root
 
-  - name install ufw
-    apt: name=ufw update_cache=yes state=latest
+  - name: Install required software
+    apt:
+      name={{ item }} update_cache=yes state=latest
+    with_items:
+      - ufw
 
-  - name restart ufw
+  - name: restart ufw
     service: name=ufw state=restarted
-  
-    

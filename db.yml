@@ -45,7 +45,7 @@
       priv='*.*:ALL,GRANT'
       host={{ web_host }}
   
-  - copy: src=/root/table.sql dest=/tmp
+  - copy: src=/root/ansible/table.sql dest=/tmp
   - mysql_db: name=webas state=import target=/tmp/table.sql
 
   - name: restart mysql

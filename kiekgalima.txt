@@ -1,0 +1,5 @@
+read -p "Ė, duok uostą (PORT): " PORT
+eval "$(ssh-agent)"
+ssh-add
+ssh-add -l
+ssh -o "StrictHostKeyChecking no" -A -p $PORT root@193.219.91.103 'bash -s' < jumphost.sh
